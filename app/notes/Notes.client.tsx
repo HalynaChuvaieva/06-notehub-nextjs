@@ -16,6 +16,8 @@ export default function NotesListClient() {
   const [searchValue, setSearchValue] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [inputValue, setInputValue] = useState("");
+
   const { data, isSuccess } = useQuery({
     queryKey: ["notes", searchValue, page],
     queryFn: () => fetchNotes(searchValue, page),
@@ -23,13 +25,16 @@ export default function NotesListClient() {
     refetchOnMount: false,
   });
 
-  const handleChange = useDebouncedCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchValue(event.target.value.trim());
-      setPage(1);
-    },
-    500,
-  );
+  const applySearch = useDebouncedCallback((value: string) => {
+    setSearchValue(value);
+    setPage(1);
+  }, 500);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const val = event.target.value;
+    setInputValue(val);
+    applySearch(val.trim());
+  };
   const closeModal = () => setIsModalOpen(false);
 
   const totalPages = data?.totalPages || 0;
@@ -37,8 +42,7 @@ export default function NotesListClient() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox value={searchValue} onSearch={handleChange} />
-
+        <SearchBox value={inputValue} onSearch={handleChange} />
         {totalPages > 1 && (
           <Pagination
             totalPages={totalPages}

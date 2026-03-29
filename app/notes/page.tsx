@@ -6,12 +6,12 @@ import {
 import { fetchNotes } from "@/lib/api";
 import NotesListClient from "./Notes.client";
 
-type Props = {
-  params: Promise<{ searchValue: string; page: number }>;
-};
+interface Props {
+  searchValue?: string;
+  page?: number;
+}
 
-const NoteListDetails = async ({ params }: Props) => {
-  const { searchValue, page } = await params;
+const NoteListDetails = async ({ searchValue = "", page = 1 }: Props) => {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
